@@ -27,6 +27,12 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
+    @Transactional(readOnly = true)
+    public UsersEntity findByEmail(String email) {
+        return usersRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
+
     @Transactional
     public void deleteUser(Long id) {
         usersRepository.deleteById(id);

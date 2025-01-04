@@ -41,9 +41,17 @@ password:
  * Spring 을 사용하는 경우 @ExtendWith(SpringExtension.class) 를 사용하여 테스트를 진행합니다. 이 어노테이션은 JUnit5 에서 제공합니다.
  * 다만 JPA 를 테스트하는 경우라면 @DataJpaTest 를 사용하여 테스트를 진행합니다.
  * 해당 어노테이션 내부에 @ExtendWith(SpringExtension.class) 가 포함되어 있습니다.
+ * 
+ * @Sql 어노테이션을 사용하여 테스트 전에 SQL 파일을 실행할 수 있습니다.
  */
 @DataJpaTest
 @TestPropertySource(locations = "classpath:test-application.yml")
+@Sql("/sql/data.sql")
 class Test{
 }
 ```
+
+---
+## Tips! 
+- Test Class 전체 테스트시, 어떤 Methods 들이 실행되었는지 Methods 가 안보인다면!!
+  - intellij settings -> build, execution, deployment -> build tools -> gradle -> run tests using -> IntelliJ IDEA 설정 변경! 

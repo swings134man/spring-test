@@ -27,6 +27,12 @@ public class UserController {
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
+    @GetMapping("/{email}")
+    public ResponseEntity<UsersEntity> findByIdEmail(@PathVariable String email) {
+        UsersEntity data = userService.findByEmail(email);
+        return new ResponseEntity<>(data, HttpStatus.OK);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
