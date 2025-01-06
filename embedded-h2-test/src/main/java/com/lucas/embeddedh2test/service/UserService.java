@@ -2,23 +2,26 @@ package com.lucas.embeddedh2test.service;
 
 import com.lucas.embeddedh2test.model.UsersEntity;
 import com.lucas.embeddedh2test.repository.UsersRepository;
+import com.lucas.embeddedh2test.utils.TestLogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
+
     private final UsersRepository usersRepository;
+    private final TestLogUtil testLogUtil;
 
 
     @Transactional
     public UsersEntity saveUser(UsersEntity usersEntity) {
-        return usersRepository.save(usersEntity);
+        UsersEntity save = usersRepository.save(usersEntity);
+        printLog();
+        return save;
     }
 
     @Transactional(readOnly = true)
@@ -34,7 +37,22 @@ public class UserService {
     }
 
     @Transactional
+    public UsersEntity update(UsersEntity user) {
+        UsersEntity entity = findById(user.getId());
+        entity.setNickname(user.getNickname());
+        entity.setEmail(user.getEmail());
+        entity.setAddress(user.getAddress());
+        entity = usersRepository.save(entity);
+        return entity;
+    }
+
+    @Transactional
     public void deleteUser(Long id) {
         usersRepository.deleteById(id);
     }
+
+    private void printLog() {
+        testLogUtil.print();
+    }
+
 }

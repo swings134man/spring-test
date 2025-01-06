@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @Description: User Repository Test ()
 **/
 @DataJpaTest
-@TestPropertySource(locations = "classpath:test-application.yml")
+@TestPropertySource(properties = {"spring.config.location = classpath:test-application.yml"})
 @Sql("/sql/user-repository-test-data.sql")
 public class UserRepositoryTest {
 

@@ -45,7 +45,8 @@ password:
  * @Sql 어노테이션을 사용하여 테스트 전에 SQL 파일을 실행할 수 있습니다.
  */
 @DataJpaTest
-@TestPropertySource(locations = "classpath:test-application.yml")
+@TestPropertySource(locations = "classpath:test-application.properties")
+// @TestPropertySource(properties = {"spring.config.location = classpath:test-application.yml"}) // yml 파일 사용시
 @Sql("/sql/data.sql")
 class Test{
 }
@@ -54,4 +55,8 @@ class Test{
 ---
 ## Tips! 
 - Test Class 전체 테스트시, 어떤 Methods 들이 실행되었는지 Methods 가 안보인다면!!
-  - intellij settings -> build, execution, deployment -> build tools -> gradle -> run tests using -> IntelliJ IDEA 설정 변경! 
+  - intellij settings -> build, execution, deployment -> build tools -> gradle -> run tests using -> IntelliJ IDEA 설정 변경!
+<br/><br/>
+- JPA 에서 H2 로 테스트를 진행할 때 `.sql` 파일로 미리 생성 후 insert 를 또 하게 된다면 오류가 발생한다.
+  - 그 이유는 파일에서 이미 id=1 이 들어갔을 경우 AUTO_INCREMENT 로 인해 다시 1로 시작하기 때문이다. (이후 2부터 잡히지 않음.)
+  - 해결방법은 `url: jdbc:h2:mem:test;MODE=LEGACY` 로 설정하면 된다.
