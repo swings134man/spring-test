@@ -27,13 +27,13 @@ public class UserController {
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
-    @GetMapping("/{email}")
+    @GetMapping("email/{email}")
     public ResponseEntity<UsersEntity> findByIdEmail(@PathVariable String email) {
         UsersEntity data = userService.findByEmail(email);
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
-    @PutMapping
+    @PutMapping("/update")
     public ResponseEntity<UsersEntity> updateUser(@RequestBody UsersEntity user) {
         UsersEntity entity = userService.update(user);
         return new ResponseEntity<>(entity, HttpStatus.OK);

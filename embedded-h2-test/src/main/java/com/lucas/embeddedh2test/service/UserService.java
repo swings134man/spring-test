@@ -1,5 +1,6 @@
 package com.lucas.embeddedh2test.service;
 
+import com.lucas.embeddedh2test.exceptions.ResourceNotFoundException;
 import com.lucas.embeddedh2test.model.UsersEntity;
 import com.lucas.embeddedh2test.repository.UsersRepository;
 import com.lucas.embeddedh2test.utils.TestLogUtil;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +20,7 @@ public class UserService {
 
 
     @Transactional
-    public UsersEntity saveUser(UsersEntity usersEntity) {
+    public UsersEntity saveUser(@RequestBody UsersEntity usersEntity) {
         UsersEntity save = usersRepository.save(usersEntity);
         printLog();
         return save;
@@ -27,13 +29,13 @@ public class UserService {
     @Transactional(readOnly = true)
     public UsersEntity findById(Long id) {
         return usersRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Users", id));
     }
 
     @Transactional(readOnly = true)
     public UsersEntity findByEmail(String email) {
         return usersRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Email", email));
     }
 
     @Transactional
