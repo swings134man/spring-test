@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor @AllArgsConstructor
 public class UsersEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE) // for test SEQUENCE
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // for test SEQUENCE
     private Long id;
 
     @Column(name = "email")

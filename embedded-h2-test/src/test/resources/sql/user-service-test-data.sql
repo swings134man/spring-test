@@ -1,2 +1,2 @@
-insert into users (id, email, nickname, address)
-values (1, 'test@test.com', 'test', 'test address');
+insert into users (email, nickname, address)
+values ('test@test.com', 'test', 'test address');

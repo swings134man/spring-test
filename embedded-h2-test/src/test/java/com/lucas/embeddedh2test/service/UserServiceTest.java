@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,7 +25,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 **/
 @SpringBootTest
 @TestPropertySource(properties = {"spring.config.location = classpath:test-application.yml"})
-@Sql("/sql/user-service-test-data.sql")
+@SqlGroup({
+        @Sql(value = "/sql/user-service-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        @Sql(value = "/sql/delete-all.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+})
 @DisplayName("UserService 테스트")
 public class UserServiceTest {
 

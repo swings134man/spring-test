@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:test;MODE=LEGACY # in-memory database (in-memory, embedded, file(realDB))
+    url: jdbc:h2:mem:test;MODE=LEGACY;DB_CLOSE_DELAY=-1 # in-memory database (in-memory, embedded, file(realDB))
     driverClassName: org.h2.Driver
     username: sa
     password:
