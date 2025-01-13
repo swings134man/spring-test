@@ -2,12 +2,15 @@ package com.lucas.embeddedh2test.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lucas.embeddedh2test.model.UsersEntity;
+import com.lucas.embeddedh2test.utils.TestLogUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
@@ -39,6 +42,9 @@ public class UserControllerTest {
     private MockMvc mockMvc;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @MockBean
+    private TestLogUtil testLogUtil;
+
     @Test
     @DisplayName("유저 정보 전달받기 - By ID")
     void findUser() throws Exception {
@@ -59,6 +65,17 @@ public class UserControllerTest {
     }
 
     @Test
+    @DisplayName("유저 정보 찾기 - By Email")
+    void findByEmail() throws Exception{
+        mockMvc.perform(get("/api/v1/users/email/test@test.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.email").value("test@test.com"))
+                .andExpect(jsonPath("$.nickname").value("test"))
+                .andExpect(jsonPath("$.address").value("test address"));
+    }
+
+    @Test
     @DisplayName("유저 정보 저장하기")
     void save() throws Exception {
         UsersEntity entity = UsersEntity.builder()
@@ -67,6 +84,8 @@ public class UserControllerTest {
                 .nickname("test3")
                 .address("test address3")
                 .build();
+
+        BDDMockito.doNothing().when(testLogUtil).print();
 
         mockMvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -97,5 +116,16 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.email").value("test2@test.com"))
                 .andExpect(jsonPath("$.nickname").value("test2"))
                 .andExpect(jsonPath("$.address").value("test address2"));
+    }
+
+    @Test
+    @DisplayName("유저 정보 삭제하기 - By ID")
+    void deleteUser() throws Exception {
+        mockMvc.perform(delete("/api/v1/users/1"))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/api/v1/users/1"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Users에서 Param 1를 찾을 수 없습니다.")); // 메시지 검증
     }
 }//class

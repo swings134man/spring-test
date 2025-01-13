@@ -1,5 +1,6 @@
 package com.lucas.embeddedh2test.service;
 
+import com.lucas.embeddedh2test.exceptions.ResourceNotFoundException;
 import com.lucas.embeddedh2test.model.UsersEntity;
 import com.lucas.embeddedh2test.utils.TestLogUtil;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * @package : com.lucas.embeddedh2test.service
@@ -103,5 +105,20 @@ public class UserServiceTest {
 
         // then
         assertThat(result.getNickname()).isEqualTo("test123");
+    }
+
+    @Test
+    @DisplayName("사용자 삭제")
+    void deleteUser() {
+        // given
+        Long id = 1L;
+
+        // when
+        usersService.deleteUser(id);
+
+        // then
+        assertThatThrownBy(() -> usersService.findById(id))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Users에서 Param " + id + "를 찾을 수 없습니다.");
     }
 }
