@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +19,7 @@ public class UserService {
 
 
     @Transactional
-    public UsersEntity saveUser(@RequestBody UsersEntity usersEntity) {
+    public UsersEntity saveUser(UsersEntity usersEntity) {
         UsersEntity save = usersRepository.save(usersEntity);
         printLog();
         return save;
