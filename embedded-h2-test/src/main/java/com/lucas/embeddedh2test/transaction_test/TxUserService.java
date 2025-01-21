@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+
 /**
  * @package : com.lucas.embeddedh2test.transaction_test
  * @name : TxUserService.java
@@ -75,7 +77,31 @@ public class TxUserService {
     }
 
     // --------- Transactional Propagation: Checked Exception (basic Not Rollback) ------------
+    // checked: 컴파일 시점에 반드시 예외처리를 해야하는 Exception
 
+    // throws 를 사용하면 Rollback 되지 않는다. 다만 rollbackFor=IOException.class 를 사용하면 Rollback 된다.
+    // try-catch 로 감싸면 Exception 이 감지가 되지 않기 때문
+    @Transactional
+    public void save_checked(UsersEntity user, boolean isException) {
+        UsersEntity saveEntity = repository.save(user);
+        log.info("### Checked Save Success !!!");
+
+        try {
+            // 이부분을 try-catch 하지 않고, throws IOException 으로 처리하면 Rollback 된다.
+            update_checked(saveEntity, isException);
+        } catch (Exception e) {
+            log.info("not RollBack save()");
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void update_checked(UsersEntity user, boolean isException) throws IOException {
+        user.setNickname("updated");
+        UsersEntity updatedEntity = repository.save(user);
+        if(isException) {
+            throw new IOException("Updated Rollback");
+        }
+    }
 
 
 
