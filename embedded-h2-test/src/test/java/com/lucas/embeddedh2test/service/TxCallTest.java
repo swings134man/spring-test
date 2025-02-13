@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -24,6 +25,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  *      1. callTest() : create(), update() 무엇을 호출하던 save() 트랜잭션으로 묶인다(@Transactional 존재여부 상관 X)
  *      2. updateCall() : update() 는 @Transactional 이 존재 하지 않기에 Transaction 이 적용되지 않는다.
  *      3. createCall() : create() 는 @Transactional 이 존재하기에 Transaction 이 적용된다. 다만 save 가 아닌 create 트랜잭션으로 묶인다.
+ *      4. requireNewCall() : TxProxyCallTest 와 마찬가지로 requireNewCall 은 새로운 Transaction 을 생성할것이라 예측됬지만, 같은 Proxy 객체 호출이기에
+ *                    save() 트랜잭션으로 묶인다.
 **/
 @SpringBootTest
 @Slf4j
@@ -36,7 +39,7 @@ public class TxCallTest {
     @DisplayName("TX 호출 테스트")
     void callTest() {
         log.info("### Call Test");
-        txService.save(true); // create() 는 save 트랜잭션에 묶여있다.
+        txService.save("create"); // create() 는 save 트랜잭션에 묶여있다.
     }
 
     @Test
@@ -53,6 +56,13 @@ public class TxCallTest {
         txService.create(); // create Transactional
     }
 
+    @Test
+    @DisplayName("Require new Tx 호출 테스트")
+    void requireNewCall() {
+        log.info("### Require New Call Test");
+        txService.save("new");
+    }
+
     // --------- Test Configuration Classes ------------
     @TestConfiguration
     static class TxCallClass{
@@ -65,14 +75,16 @@ public class TxCallTest {
     static class TxService {
 
         @Transactional
-        public void save(boolean isSave) {
+        public void save(String isSave) {
             log.info("### Save Call");
             printTx();
 
-            if(isSave) {
+            if(isSave.equals("create")) {
                 create();
-            }else {
+            }else if(isSave.equals("update")){
                 update();
+            }else if(isSave.equals("new")) {
+                newTx();
             }
         }
 
@@ -84,6 +96,12 @@ public class TxCallTest {
 
         protected void update() {
             log.info("#### Update Call");
+            printTx();
+        }
+
+        @Transactional(propagation = Propagation.REQUIRES_NEW)
+        protected void newTx() {
+            log.info("#### Require New Tx Call");
             printTx();
         }
 
