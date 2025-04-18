@@ -90,4 +90,30 @@ class LockServiceTest {
         System.out.println("남은 재고: " + lockEntity.getStock());
         assertEquals(0L, lockEntity.getStock());
     }
+
+    // Retry 를 수행하더라도 모두가 성공할것이란 보장은 없다.
+    // Catch 에 대한부분은 @Recover 에서 처리됨.
+    @Test
+    @DisplayName("낙관적 락 Retry 테스트")
+    void optimistic_lock_retry() throws InterruptedException {
+        int threadCount = 10;
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            executor.submit(() -> {
+                try {
+                    lockService.optimisticRetry("test");
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+
+        LockEntity lockEntity = lockRepository.findByName("test");
+        System.out.println("남은 재고: " + lockEntity.getStock());
+        assertNotEquals(0L, lockEntity.getStock());
+    }
 }
